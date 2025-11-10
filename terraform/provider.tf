@@ -1,13 +1,21 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 4.9"
+    }
+  }
+}
+
 provider "aws" {
-  region = "eu-west-1"
+  region = var.region
   assume_role {
-    role_arn = "arn:aws:iam::135544376709:role/NonprodProvisionerRole"
+    role_arn = var.oidc_role
   }
   default_tags {
     tags = {
       project     = var.project
-      nonuke      = var.nonuke
-      environment = "nonprod"
+      environment = var.env
     }
   }
 }
