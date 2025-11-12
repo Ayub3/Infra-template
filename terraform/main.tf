@@ -1,5 +1,5 @@
 module "vpc" {
-  source = "git::https://github.com/Ayub3/TF-Modules.git//vpc"
+  source = "git::https://github.com/Ayub3/TF-Modules.git//VPC"
   aws_vpc = {
     name                 = "${var.project}-${var.env}-vpc"
     cidr_block           = "10.0.0.0/16"
