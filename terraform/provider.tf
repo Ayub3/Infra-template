@@ -5,9 +5,7 @@ terraform {
       version = "~> 4.9"
     }
   }
-  backend "s3" {
-    use_lockfile = true
-  }
+  backend "s3" {}
 }
 
 provider "aws" {

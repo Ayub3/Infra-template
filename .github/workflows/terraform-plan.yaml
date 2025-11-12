@@ -91,6 +91,13 @@ jobs:
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
+      
+      - uses: actions/checkout@v4
+      - name: Configure AWS credentials using OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: "arn:aws:iam::499497677544:role/GithubOIDC"
+          aws-region: "eu-west-2"
 
       - name: Lint Terraform
         run: terraform fmt -check
