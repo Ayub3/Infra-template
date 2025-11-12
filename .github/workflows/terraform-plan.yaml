@@ -52,4 +52,4 @@ jobs:
         run: terraform init -backend-config=terraform/environments/developement/backend.conf
 
       - name: Dev Terraform Plan
-        run: terraform plan -var-file=terraform/environments/developement/backend.conf
+        run: terraform plan -var-file=terraform/environments/developement/dev.tfvars
