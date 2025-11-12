@@ -98,8 +98,8 @@ jobs:
 
       - name: Terraform Init
         working-directory: ${{ env.TF_WORKING_DIR }}
-        run: terraform init -backend-config="env/${{ github.event.inputs.environment }}/backend.conf"
+        run: terraform init -backend-config="env/dev/backend.conf"
 
       - name: Terraform Plan
         working-directory: ${{ env.TF_WORKING_DIR }}
-        run: terraform plan -var-file="env/${{ github.event.inputs.environment }}/${{ github.event.inputs.environment }}.tfvars"
+        run: terraform plan -var-file="env/dev/dev.tfvars"
