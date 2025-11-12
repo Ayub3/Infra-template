@@ -9,6 +9,10 @@ jobs:
   lint_and_scan:
     name: Lint and Security Scan
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: terraform
     steps:
       - uses: actions/checkout@v4
 
@@ -48,10 +52,12 @@ jobs:
       - name: Dev Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Dev Init Terraform
-        working-directory: terraform
-        run: terraform init -backend-config=terraform/environments/developement/dev.tfvars
+      - name: Dev Terraform Init
+        run: |
+          terraform init \
+            -var-file="./dev/dev.tfvars" \
+            -backend-config="./dev/backend.conf"
 
       - name: Dev Terraform Plan
         working-directory: terraform
-        run: terraform plan -var-file=terraform/environments/developement/dev.tfvars
+        run: terraform plan -var-file=terraform/env/dev/dev.tfvars
