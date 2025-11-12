@@ -55,9 +55,9 @@ jobs:
       - name: Dev Terraform Init
         run: |
           terraform init \
-            -var-file="./dev/dev.tfvars" \
-            -backend-config="./dev/backend.conf"
+            -var-file="./env/dev/dev.tfvars" \
+            -backend-config="./env/dev/backend.conf"
 
       - name: Dev Terraform Plan
         working-directory: terraform
-        run: terraform plan -var-file=terraform/env/dev/dev.tfvars
+        run: terraform plan -var-file=/env/dev/dev.tfvars
