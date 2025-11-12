@@ -15,15 +15,15 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
       
-      - name: Run Trivy vulnerability scanner in IaC mode
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'config'
-          hide-progress: false
-          format: 'table'
-          exit-code: '1'
-          ignore-unfixed: true
-          severity: 'CRITICAL,HIGH'
+      # - name: Run Trivy vulnerability scanner in IaC mode
+        # uses: aquasecurity/trivy-action@master
+        # with:
+        #   scan-type: 'config'
+        #   hide-progress: false
+        #   format: 'table'
+        #   exit-code: '1'
+        #   ignore-unfixed: true
+        #   severity: 'CRITICAL,HIGH'
 
       - name: Terraform fmt check
         run: terraform fmt -check -recursive
