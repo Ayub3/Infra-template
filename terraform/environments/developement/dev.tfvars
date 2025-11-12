@@ -1,3 +1,5 @@
-region         = "eu-west-2"
-role_to_assume = "arn:aws:iam::499497677544:role/GithubOIDC"
-project        = "JummahCast-ECS"
+region           = "eu-west-2"
+role_to_assume   = "arn:aws:iam::499497677544:role/GithubOIDC"
+project          = "JummahCast-ECS"
+state_bucket     = "jummahcast-dev-tfstate-bucket"
+state_bucket_key = "dev/JummahCast/terraform.tfstate"

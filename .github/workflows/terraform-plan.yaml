@@ -50,7 +50,7 @@ jobs:
 
       - name: Dev Init Terraform
         working-directory: terraform
-        run: terraform init -backend-config=terraform/backends/dev-backend.conf
+        run: terraform init -backend-config=terraform/environments/developement/dev.tfvars
 
       - name: Dev Terraform Plan
         working-directory: terraform
