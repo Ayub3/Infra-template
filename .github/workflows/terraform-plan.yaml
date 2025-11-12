@@ -39,11 +39,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Configure OIDC for Dev
+      - name: Configure AWS credentials using OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${{ secrets.DEV_ACCOUNT_ID }}:role/github-oidc-terraform
-          aws-region: eu-west-1
+          role-to-assume: "arn:aws:iam::499497677544:role/GithubOIDC"
+          aws-region: "eu-west-2"
 
       - name: Dev Setup Terraform
         uses: hashicorp/setup-terraform@v3

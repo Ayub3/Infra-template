@@ -10,7 +10,7 @@ terraform {
 provider "aws" {
   region = var.region
   assume_role {
-    role_arn = var.oidc_role
+    role_arn = var.role_to_assume
   }
   default_tags {
     tags = {

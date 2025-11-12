@@ -13,7 +13,7 @@ variable "region" {
   description = "aws region"
 }
 
-variable "oidc_role" {
+variable "role_to_assume" {
   type        = string
   description = "oidc role to assume"
 }
