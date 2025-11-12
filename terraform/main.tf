@@ -7,7 +7,7 @@ module "vpc" {
     enable_dns_support   = true
 
     tags = {
-      env = var.env
+      env     = var.env
       project = "${var.project}-vpc"
     }
   }
