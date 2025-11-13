@@ -1,3 +1,16 @@
-module "example_sqs_module" {
-  source = "./modules/example_sqs_module"
+module "vpc" {
+  source = "git::https://github.com/Ayub3/TF-Modules.git//VPC"
+  aws_vpc = {
+    name                 = "${var.project}-${var.env}-vpc"
+    cidr_block           = "10.0.0.0/16"
+    enable_dns_hostnames = true
+    enable_dns_support   = true
+
+    tags = {
+      env     = var.env
+      project = "${var.project}-vpc"
+    }
+  }
+
+  public_cidr_block = ["10.0.0.0/24"]
 }
