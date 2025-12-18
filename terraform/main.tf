@@ -1,4 +1,5 @@
 module "vpc" {
+  count  = var.isprod ? 1 : 0
   source = "git::https://github.com/Ayub3/TF-Modules.git//VPC"
   aws_vpc = {
     name                 = "${var.project}-${var.env}-vpc"

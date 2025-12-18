@@ -4,65 +4,49 @@
 #   push:
 #     branches-ignore:
 #       - main
+#   pull_request:
+#     branches:
+#       - main
+#   workflow_dispatch:
+#     inputs:
+#       environment:
+#         description: 'Environment to plan (dev/staging/prod)'
+#         required: true
+#         default: dev
+
+# env:
+#   TF_WORKING_DIR: terraform
 
 # jobs:
-#   lint_and_scan:
-#     name: Lint and Security Scan
+#   terraform-plan:
 #     runs-on: ubuntu-latest
-#     defaults:
-#       run:
-#         shell: bash
-#         working-directory: terraform
+#     permissions:
+#       id-token: write
+#       contents: read
 #     steps:
 #       - uses: actions/checkout@v4
 
 #       - name: Setup Terraform
 #         uses: hashicorp/setup-terraform@v3
       
-#       # - name: Run Trivy vulnerability scanner in IaC mode
-#         # uses: aquasecurity/trivy-action@master
-#         # with:
-#         #   scan-type: 'config'
-#         #   hide-progress: false
-#         #   format: 'table'
-#         #   exit-code: '1'
-#         #   ignore-unfixed: true
-#         #   severity: 'CRITICAL,HIGH'
-
-#       - name: Terraform fmt check
-#         run: terraform fmt -check -recursive
-
-#   plan:
-#     name: Dev Terraform Plan
-#     runs-on: ubuntu-latest
-#     needs: lint_and_scan
-#     permissions:
-#       id-token: write
-#       contents: read
-
-#     steps:
 #       - uses: actions/checkout@v4
-
 #       - name: Configure AWS credentials using OIDC
 #         uses: aws-actions/configure-aws-credentials@v4
 #         with:
-#           role-to-assume: "arn:aws:iam::499497677544:role/GithubOIDC"
+#           role-to-assume: ""
 #           aws-region: "eu-west-2"
 
-#       - name: Dev Setup Terraform
-#         uses: hashicorp/setup-terraform@v3
+#       - name: Lint Terraform
+#         run: terraform fmt -check
+#         working-directory: ${{ env.TF_WORKING_DIR }}
 
-#       - name: Dev Terraform Init
-#         run: |
-#           terraform init \
-#             -var-file="./env/dev/dev.tfvars" \
-#             -backend-config="./env/dev/backend.conf"
+#       - name: Terraform Init
+#         working-directory: ${{ env.TF_WORKING_DIR }}
+#         run: terraform init -backend-config="env/dev/backend.conf"
 
-#       - name: Dev Terraform Plan
-#         working-directory: terraform
-#         run: terraform plan -var-file=/env/dev/dev.tfvars
-
-
+#       - name: Terraform Plan
+#         working-directory: ${{ env.TF_WORKING_DIR }}
+#         run: terraform plan -var-file="env/dev/dev.tfvars"
 
 name: Terraform Plan
 
@@ -79,37 +63,43 @@ on:
         description: 'Environment to plan (dev/staging/prod)'
         required: true
         default: dev
-
+  
 env:
   TF_WORKING_DIR: terraform
+  ENVIRONMENT: ${{ github.event.inputs.environment || 'dev' }}
 
 jobs:
   terraform-plan:
+    environment: ${{ github.event.inputs.environment || 'dev' }}
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
+
+    env:
+      TF_WORKING_DIR: terraform
+      ENVIRONMENT: ${{ github.event.inputs.environment || 'dev' }}
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-      
-      - uses: actions/checkout@v4
       - name: Configure AWS credentials using OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: "arn:aws:iam::499497677544:role/GithubOIDC"
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: "eu-west-2"
 
+
       - name: Lint Terraform
-        run: terraform fmt -check
         working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform fmt -check
 
       - name: Terraform Init
         working-directory: ${{ env.TF_WORKING_DIR }}
-        run: terraform init -backend-config="env/dev/backend.conf"
+        run: |
+          terraform init \
+            -backend-config="env/${{ env.ENVIRONMENT }}/backend.conf"
 
       - name: Terraform Plan
         working-directory: ${{ env.TF_WORKING_DIR }}
-        run: terraform plan -var-file="env/dev/dev.tfvars"
+        run: |
+          terraform plan \
+            -var-file="env/${{ env.ENVIRONMENT }}/${{ env.ENVIRONMENT }}.tfvars"
+
