@@ -1,3 +1,53 @@
+# name: Terraform Plan
+
+# on:
+#   push:
+#     branches-ignore:
+#       - main
+#   pull_request:
+#     branches:
+#       - main
+#   workflow_dispatch:
+#     inputs:
+#       environment:
+#         description: 'Environment to plan (dev/staging/prod)'
+#         required: true
+#         default: dev
+
+# env:
+#   TF_WORKING_DIR: terraform
+
+# jobs:
+#   terraform-plan:
+#     runs-on: ubuntu-latest
+#     permissions:
+#       id-token: write
+#       contents: read
+#     steps:
+#       - uses: actions/checkout@v4
+
+#       - name: Setup Terraform
+#         uses: hashicorp/setup-terraform@v3
+      
+#       - uses: actions/checkout@v4
+#       - name: Configure AWS credentials using OIDC
+#         uses: aws-actions/configure-aws-credentials@v4
+#         with:
+#           role-to-assume: ""
+#           aws-region: "eu-west-2"
+
+#       - name: Lint Terraform
+#         run: terraform fmt -check
+#         working-directory: ${{ env.TF_WORKING_DIR }}
+
+#       - name: Terraform Init
+#         working-directory: ${{ env.TF_WORKING_DIR }}
+#         run: terraform init -backend-config="env/dev/backend.conf"
+
+#       - name: Terraform Plan
+#         working-directory: ${{ env.TF_WORKING_DIR }}
+#         run: terraform plan -var-file="env/dev/dev.tfvars"
+
 name: Terraform Plan
 
 on:
@@ -13,37 +63,43 @@ on:
         description: 'Environment to plan (dev/staging/prod)'
         required: true
         default: dev
-
+  
 env:
   TF_WORKING_DIR: terraform
+  ENVIRONMENT: ${{ github.event.inputs.environment || 'dev' }}
 
 jobs:
   terraform-plan:
+    environment: ${{ github.event.inputs.environment || 'dev' }}
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
+
+    env:
+      TF_WORKING_DIR: terraform
+      ENVIRONMENT: ${{ github.event.inputs.environment || 'dev' }}
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-      
-      - uses: actions/checkout@v4
       - name: Configure AWS credentials using OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ""
-          aws-region: ""
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: "eu-west-2"
+
 
       - name: Lint Terraform
-        run: terraform fmt -check
         working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform fmt -check
 
       - name: Terraform Init
         working-directory: ${{ env.TF_WORKING_DIR }}
-        run: terraform init -backend-config="env/dev/backend.conf"
+        run: |
+          terraform init \
+            -backend-config="env/${{ env.ENVIRONMENT }}/backend.conf"
 
       - name: Terraform Plan
         working-directory: ${{ env.TF_WORKING_DIR }}
-        run: terraform plan -var-file="env/dev/dev.tfvars"
+        run: |
+          terraform plan \
+            -var-file="env/${{ env.ENVIRONMENT }}/${{ env.ENVIRONMENT }}.tfvars"
+

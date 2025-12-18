@@ -17,3 +17,8 @@ variable "role_to_assume" {
   type        = string
   description = "oidc role to assume"
 }
+
+variable "isprod" {
+  type        = bool
+  description = "check if env is prod"
+}
